@@ -10,11 +10,46 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  // Esse middleware é responsável por receber o username do usuário pelo header 
+  // e validar se existe ou não um usuário com o username passado. Caso exista, o 
+  // usuário deve ser repassado para o request e a função next deve ser chamada.
+
+  const {username} = request.headers;
+
+  const user = users.find(user => user.username === username);
+
+  if(!user) return response.status(400).json({error: "User already exists!"})
+
+  request.push(user);
+
+  next();
+
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  /*
+   * Esse middleware deve receber o **username** de dentro do header 
+   * o **id** de um *todo* de dentro de `request.params`. 
+   * Validar o usuário 
+   * Validar que o `id` seja um uuid
+   * Validar que esse `id` pertence a um *todo* do usuário informado. 
+   * Com todas as validações passando, o *todo* encontrado deve ser passado 
+   *  para o `request` assim como o usuário encontrado 
+  * A função next deve ser chamada.
+   * */
+
+  const { id } = request.params;
+  const { username } = request.headers;
+
+  const user = users.find(user => user.username === username)
+  const todo = user.todos.find(todo => todo.id === id)
+
+  // == CONTINUAR DAQUI == \\
+  
+  request.user = user;
+  request.todo = todo;
+
+  next();
 }
 
 function checksTodoExists(request, response, next) {
